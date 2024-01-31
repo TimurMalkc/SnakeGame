@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,7 @@ public class AnimationPanel extends JPanel implements ActionListener,KeyListener
 	int direction = 2;
 	List<Integer> xSnake = new ArrayList<Integer>();
 	List<Integer> ySnake = new ArrayList<Integer>();
+	ReplayButton rButton = new ReplayButton();
 	Random rand = new Random();
 	Rectangle foodRect;
 	boolean isFull = false;
@@ -47,6 +49,8 @@ public class AnimationPanel extends JPanel implements ActionListener,KeyListener
 		this.addKeyListener(this);
 		this.setVisible(true);
 		this.setBackground(Color.black);
+		this.setLayout(new GridBagLayout());
+		this.add(rButton);
 		xSnake.add(xHead);
 		ySnake.add(yHead);
 		spawnFood();
@@ -75,42 +79,52 @@ public class AnimationPanel extends JPanel implements ActionListener,KeyListener
 	@Override
 	public void actionPerformed(ActionEvent e) {		
 		
-		for(int i = 1; i < xSnake.size(); i++ ) {
-			if(xSnake.get(i) == xSnake.get(0) && ySnake.get(i) == ySnake.get(0)) {
-				System.out.println("crash");
-			}
-			
-		}
-		
 		for(int i = xSnake.size() - 1; i > 0; i-- ) {
 			xSnake.set(i, xSnake.get(i-1));
 			ySnake.set(i, ySnake.get(i-1));
 		}
 		
 		switch(direction) {
-		case 2:
-			xSnake.set(0, xSnake.get(0) + velocity);
-			break;
-		case -2:
-			xSnake.set(0, xSnake.get(0) - velocity);
-			break;
-		case 1:
-			ySnake.set(0, ySnake.get(0) - velocity);
-			break;
-		case -1:
-			ySnake.set(0, ySnake.get(0) + velocity);
-			break;
-		}
+			case 2:
+				xSnake.set(0, xSnake.get(0) + velocity);
+				break;
+			case -2:
+				xSnake.set(0, xSnake.get(0) - velocity);
+				break;
+			case 1:
+				ySnake.set(0, ySnake.get(0) - velocity);
+				break;
+			case -1:
+				ySnake.set(0, ySnake.get(0) + velocity);
+				break;
+			}
 		
 		for(int i = 0; i < xSnake.size(); i++) {
 			if((xFood <= xSnake.get(i) && xSnake.get(i) <= xFood + 20) && 
 			   (yFood <= ySnake.get(i) && ySnake.get(i) <= yFood + 20)	) {
-				System.out.println("yum");
 				ySnake.add(yFood);
 				xSnake.add(xFood);
 				spawnFood();
 				
 			}
+		}
+		
+		for(int i = 1; i < xSnake.size(); i++ ) {
+			if(xSnake.get(i) == xSnake.get(0) && ySnake.get(i) == ySnake.get(0)) {
+				timer.stop();
+				rButton.setText("Game Over");
+				rButton.setVisible(true);
+				repaint();
+			}
+			
+		if(xSnake.get(0) > panelWidth-snakeWidth || xSnake.get(0) < 0 ||
+				ySnake.get(0) > panelHeight-snakeHeight || ySnake.get(0) < 0) {
+				timer.stop();
+				rButton.setText("Game Over");
+				rButton.setVisible(true);
+				repaint();
+			}
+			
 		}
 		
 		repaint();		
@@ -156,8 +170,8 @@ public class AnimationPanel extends JPanel implements ActionListener,KeyListener
 	}
 	
 	public void spawnFood() {
-		xFood = rand.nextInt(panelWidth/20) * 20;
-		yFood = rand.nextInt(panelWidth/20) * 20;
+		xFood = rand.nextInt(panelWidth/foodWidth) * foodWidth;
+		yFood = rand.nextInt(panelHeight/foodHeight) * foodHeight;
 		foodRect = new Rectangle(xFood, yFood, foodWidth, foodHeight);
 	}
 	

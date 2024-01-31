@@ -7,7 +7,9 @@ public class Frame extends JFrame{
 	Frame(){
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.add(panel);
+		this.setTitle("Snake Game");
 		this.setVisible(true);
+		this.setResizable(false);
 		this.pack();
 	}
 
